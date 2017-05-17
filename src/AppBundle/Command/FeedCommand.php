@@ -31,13 +31,22 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Récupérer le service "Feed Reader"
+        $reader = $this->getContainer()->get('app.feed.reader');
 
         // Récupérer le service "Doctrine Entity Manager"
+        $em = $this
+            ->getContainer()->get('doctrine') //getDoctrine()
+            ->getRepository('AppBundle:Merchant');
 
         // Trouver le marchand d'après le code passé en argument de la commande
+        $merchantCode = $input->getArgument('merchantCode');
+
+        $merchant = $em->findOneBy(['code' => $merchantCode]);
 
         // Utiliser le service "Feed Reader" pour récupérer les offres du flux du marchand
+        $count = $reader->read($merchant);
 
         // Afficher (dans le terminal) le nombre d'offres créées ou mises à jour.
+        echo $count;
     }
 }
